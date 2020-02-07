@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Webservice</title>
+    <script src="https://code.jquery.com/jquery-3.3.1.js" integrity="sha256-2Kok7MbOyxpgUVvAk/HJ2jigOSYS2auK4Pfzbm7uH60=" crossorigin="anonymous"></script>
+</head>
+<body> 
+
+	<div id="response-container"></div>
+
+    <script>
+
+    	$(document).ready(function() {		  
+		    $.ajax({	
+		    	type: 'get',	
+		    	url: "http://webservice.talentfinder.be/Service.svc/Rest/jobs/published",		    	    	
+		        xhrFields: {
+		            withCredentials: true
+		        },		       
+		        headers: {
+		            'Authorization': 'Basic ' + btoa('bio-invest:XA925Ureb5')		            		                      
+		        },		        
+		        dataType: "xml" ,
+			}).done(function (xml) { 
+				/*console.log(xml);*/
+				var xmlDoc = xml;
+				$(xmlDoc).find('Job').each( function(){ 
+
+					var id = $(this).find('id').text();
+					var label = $(this).find('label').text();
+					var teaser = $(this).find('teaser').text();
+					$(this).find('JobData').each(function(){
+						var applyUrl = $(this).find('applyUrl').text();
+						var iso = $(this).find('iso').text();
+						var template = "<div id='job_"+id+"_"+iso+"'><h1>"+label+"</h1><p>"+teaser+"</p><p><a href='"+applyUrl+"' target='_blank'>Apply !</a></p></div>";
+						$("#response-container").append(template);
+					});       
+				});
+			}).fail(function (jqXHR, textStatus, errorThrown){
+				$("#response-container").html("<p>Une erreur est survenue : "+textStatus+"</p>");
+				
+			});  
+		});  
+
+    </script>
+</body>
+</html>
+
+
